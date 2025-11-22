@@ -10,7 +10,6 @@ import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/hooks/useTheme";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { usePrivacy } from "@/contexts/PrivacyContext";
 import {
   getUserProfile,
   saveUserProfile,
@@ -25,7 +24,6 @@ export default function ProfileScreen() {
   const { theme } = useTheme();
   const { userName, logout } = useAuth();
   const { colorScheme, toggleTheme } = useThemeContext();
-  const { privacyMode, togglePrivacy } = usePrivacy();
   const navigation = useNavigation<NativeStackNavigationProp<ProfileStackParamList>>();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [editingAllergy, setEditingAllergy] = useState("");
@@ -287,30 +285,28 @@ export default function ProfileScreen() {
             </Card>
           </Pressable>
 
-          <Pressable onPress={togglePrivacy}>
-            <Card style={styles.settingCard}>
-              <View style={styles.settingRow}>
-                <Feather
-                  name={privacyMode ? "shield" : "shield-off"}
-                  size={20}
-                  color={theme.textSecondary}
-                />
-                <View style={styles.settingInfo}>
-                  <ThemedText style={[Typography.body, styles.settingLabel]}>
-                    Privacy & Security
-                  </ThemedText>
-                  <ThemedText
-                    style={[
-                      Typography.small,
-                      { color: theme.textSecondary },
-                    ]}
-                  >
-                    {privacyMode ? "Enhanced" : "Standard"}
-                  </ThemedText>
-                </View>
+          <Card style={styles.settingCard}>
+            <View style={styles.settingRow}>
+              <Feather
+                name="shield"
+                size={20}
+                color={theme.textSecondary}
+              />
+              <View style={styles.settingInfo}>
+                <ThemedText style={[Typography.body, styles.settingLabel]}>
+                  Privacy & Security
+                </ThemedText>
+                <ThemedText
+                  style={[
+                    Typography.small,
+                    { color: theme.textSecondary },
+                  ]}
+                >
+                  Your data is stored locally
+                </ThemedText>
               </View>
-            </Card>
-          </Pressable>
+            </View>
+          </Card>
         </View>
 
         <View style={styles.section}>
