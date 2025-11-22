@@ -22,14 +22,15 @@ interface Doctor {
   longitude: number;
 }
 
-// Extended doctor database with locations
+// Extended doctor database with locations (US and India)
 const DOCTOR_DATABASE: Omit<Doctor, "distance" | "distanceText">[] = [
+  // US Doctors (New York Area)
   {
     id: "1",
     name: "Dr. Sarah Johnson",
     specialty: "General Physician",
     rating: 4.8,
-    address: "123 Medical Center Dr",
+    address: "123 Medical Center Dr, New York",
     latitude: 40.7128,
     longitude: -74.006,
   },
@@ -38,7 +39,7 @@ const DOCTOR_DATABASE: Omit<Doctor, "distance" | "distanceText">[] = [
     name: "Dr. Michael Chen",
     specialty: "Internal Medicine",
     rating: 4.9,
-    address: "456 Health Plaza",
+    address: "456 Health Plaza, New York",
     latitude: 40.758,
     longitude: -73.9855,
   },
@@ -47,7 +48,7 @@ const DOCTOR_DATABASE: Omit<Doctor, "distance" | "distanceText">[] = [
     name: "Dr. Emily Williams",
     specialty: "Family Medicine",
     rating: 4.7,
-    address: "789 Wellness Way",
+    address: "789 Wellness Way, New York",
     latitude: 40.7489,
     longitude: -73.968,
   },
@@ -56,7 +57,7 @@ const DOCTOR_DATABASE: Omit<Doctor, "distance" | "distanceText">[] = [
     name: "Dr. James Rodriguez",
     specialty: "Cardiology",
     rating: 4.9,
-    address: "321 Heart Care Center",
+    address: "321 Heart Care Center, New York",
     latitude: 40.766,
     longitude: -73.973,
   },
@@ -65,9 +66,94 @@ const DOCTOR_DATABASE: Omit<Doctor, "distance" | "distanceText">[] = [
     name: "Dr. Lisa Anderson",
     specialty: "Pediatrics",
     rating: 4.6,
-    address: "654 Children's Medical",
+    address: "654 Children's Medical, New York",
     latitude: 40.7614,
     longitude: -73.9776,
+  },
+  // India Doctors
+  // Delhi
+  {
+    id: "6",
+    name: "Dr. Rajesh Kumar",
+    specialty: "General Physician",
+    rating: 4.8,
+    address: "Apollo Hospital, Delhi",
+    latitude: 28.5355,
+    longitude: 77.3910,
+  },
+  {
+    id: "7",
+    name: "Dr. Priya Singh",
+    specialty: "Internal Medicine",
+    rating: 4.9,
+    address: "Max Healthcare, Delhi",
+    latitude: 28.5244,
+    longitude: 77.1855,
+  },
+  {
+    id: "8",
+    name: "Dr. Amit Verma",
+    specialty: "Cardiology",
+    rating: 4.7,
+    address: "Fortis Hospital, Delhi",
+    latitude: 28.5645,
+    longitude: 77.0937,
+  },
+  // Mumbai
+  {
+    id: "9",
+    name: "Dr. Neha Patel",
+    specialty: "Family Medicine",
+    rating: 4.8,
+    address: "Lilavati Hospital, Mumbai",
+    latitude: 19.0176,
+    longitude: 72.8292,
+  },
+  {
+    id: "10",
+    name: "Dr. Vikram Desai",
+    specialty: "Pediatrics",
+    rating: 4.9,
+    address: "Hinduja Hospital, Mumbai",
+    latitude: 19.0855,
+    longitude: 72.8294,
+  },
+  {
+    id: "11",
+    name: "Dr. Anjali Gupta",
+    specialty: "General Physician",
+    rating: 4.7,
+    address: "Breach Candy Hospital, Mumbai",
+    latitude: 18.9898,
+    longitude: 72.8281,
+  },
+  // Bangalore
+  {
+    id: "12",
+    name: "Dr. Suresh Rao",
+    specialty: "Internal Medicine",
+    rating: 4.8,
+    address: "Apollo Hospital, Bangalore",
+    latitude: 12.9716,
+    longitude: 77.5946,
+  },
+  {
+    id: "13",
+    name: "Dr. Divya Sharma",
+    specialty: "Cardiology",
+    rating: 4.9,
+    address: "Manipal Hospital, Bangalore",
+    latitude: 12.9352,
+    longitude: 77.6245,
+  },
+  {
+    id: "14",
+    name: "Dr. Rohit Nair",
+    specialty: "Pediatrics",
+    rating: 4.6,
+    address: "Fortis Hospital, Bangalore",
+    latitude: 13.0010,
+    longitude: 77.5753,
   },
 ];
 
