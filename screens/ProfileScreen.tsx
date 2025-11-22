@@ -275,7 +275,7 @@ export default function ProfileScreen() {
             <Card style={styles.settingCard}>
               <View style={styles.settingRow}>
                 <Feather
-                  name={colorScheme === "dark" ? "moon" : "star"}
+                  name={colorScheme === "dark" ? "package" : "heart"}
                   size={20}
                   color={theme.textSecondary}
                 />
