@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Alert, Linking } from "react-native";
+import { View, StyleSheet, Alert, Linking, Pressable } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
+import * as WebBrowser from "expo-web-browser";
 import { ScreenScrollView } from "@/components/ScreenScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
@@ -13,42 +14,82 @@ interface Doctor {
   id: string;
   name: string;
   specialty: string;
-  distance: string;
+  distance: number;
+  distanceText: string;
   rating: number;
   address: string;
+  latitude: number;
+  longitude: number;
 }
 
-const MOCK_DOCTORS: Doctor[] = [
+// Extended doctor database with locations
+const DOCTOR_DATABASE: Omit<Doctor, "distance" | "distanceText">[] = [
   {
     id: "1",
     name: "Dr. Sarah Johnson",
     specialty: "General Physician",
-    distance: "0.5 miles",
     rating: 4.8,
     address: "123 Medical Center Dr",
+    latitude: 40.7128,
+    longitude: -74.006,
   },
   {
     id: "2",
     name: "Dr. Michael Chen",
     specialty: "Internal Medicine",
-    distance: "0.8 miles",
     rating: 4.9,
     address: "456 Health Plaza",
+    latitude: 40.758,
+    longitude: -73.9855,
   },
   {
     id: "3",
     name: "Dr. Emily Williams",
     specialty: "Family Medicine",
-    distance: "1.2 miles",
     rating: 4.7,
     address: "789 Wellness Way",
+    latitude: 40.7489,
+    longitude: -73.968,
+  },
+  {
+    id: "4",
+    name: "Dr. James Rodriguez",
+    specialty: "Cardiology",
+    rating: 4.9,
+    address: "321 Heart Care Center",
+    latitude: 40.766,
+    longitude: -73.973,
+  },
+  {
+    id: "5",
+    name: "Dr. Lisa Anderson",
+    specialty: "Pediatrics",
+    rating: 4.6,
+    address: "654 Children's Medical",
+    latitude: 40.7614,
+    longitude: -73.9776,
   },
 ];
+
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 3959; // Earth's radius in miles
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 export default function DoctorsScreen() {
   const { theme } = useTheme();
   const [location, setLocation] = useState<string>("Finding location...");
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [userCoords, setUserCoords] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
     requestLocationPermission();
@@ -59,32 +100,64 @@ export default function DoctorsScreen() {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setLocation("Location permission denied");
-        setDoctors(MOCK_DOCTORS);
+        // Use default location (New York City)
+        setUserCoords({ latitude: 40.7128, longitude: -74.006 });
+        loadNearbyDoctors(40.7128, -74.006, "Current Location");
         return;
       }
 
       const currentLocation = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = currentLocation.coords;
+      setUserCoords({ latitude, longitude });
+
       const [address] = await Location.reverseGeocodeAsync({
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
+        latitude,
+        longitude,
       });
 
-      setLocation(
-        `${address.city || "Unknown"}, ${address.region || "Unknown"}`
-      );
-      setDoctors(MOCK_DOCTORS);
+      const locationName = `${address.city || "Unknown"}, ${address.region || "Unknown"}`;
+      setLocation(locationName);
+      loadNearbyDoctors(latitude, longitude, locationName);
     } catch (error) {
       setLocation("Current Location");
-      setDoctors(MOCK_DOCTORS);
+      // Use default location if error
+      setUserCoords({ latitude: 40.7128, longitude: -74.006 });
+      loadNearbyDoctors(40.7128, -74.006, "Current Location");
     }
   };
 
-  const handleGetDirections = (doctor: Doctor) => {
-    const query = encodeURIComponent(`${doctor.address}, ${doctor.name}`);
-    const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
-    Linking.openURL(url).catch(() => {
-      Alert.alert("Error", "Unable to open maps");
-    });
+  const loadNearbyDoctors = (userLat: number, userLon: number, locationName: string) => {
+    const doctorsWithDistance = DOCTOR_DATABASE.map((doctor) => {
+      const dist = calculateDistance(userLat, userLon, doctor.latitude, doctor.longitude);
+      return {
+        ...doctor,
+        distance: dist,
+        distanceText: dist < 1 ? `${(dist * 5280).toFixed(0)} ft` : `${dist.toFixed(1)} miles`,
+      };
+    }).sort((a, b) => a.distance - b.distance);
+
+    setDoctors(doctorsWithDistance);
+  };
+
+  const handleGetDirections = async (doctor: Doctor) => {
+    try {
+      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${doctor.latitude},${doctor.longitude}&travelmode=driving`;
+      const appleMapsUrl = `http://maps.apple.com/?daddr=${doctor.latitude},${doctor.longitude}`;
+      
+      // Try web browser first (works better in web context)
+      await WebBrowser.openBrowserAsync(googleMapsUrl);
+    } catch (error) {
+      // Fallback to Linking
+      try {
+        const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${doctor.latitude},${doctor.longitude}`;
+        await Linking.openURL(googleMapsUrl);
+      } catch (fallbackError) {
+        Alert.alert(
+          "Directions",
+          `${doctor.name}\n${doctor.address}\n\nPlease open your maps app and search for this address.`
+        );
+      }
+    }
   };
 
   return (
