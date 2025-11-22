@@ -37,10 +37,13 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 
 async function fetchNearbyHospitals(latitude: number, longitude: number): Promise<HealthcareProvider[]> {
   try {
-    const radius = 5000; // 5km in meters
-    const query = `[bbox=${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045}];
-      (node["amenity"="hospital"];way["amenity"="hospital"];relation["amenity"="hospital"];);
-      out geom;`;
+    const query = `[out:json];
+(
+  node["amenity"="hospital"](${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045});
+  way["amenity"="hospital"](${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045});
+  relation["amenity"="hospital"](${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045});
+);
+out center;`;
 
     const response = await fetch(
       "https://overpass-api.de/api/interpreter",
@@ -50,11 +53,22 @@ async function fetchNearbyHospitals(latitude: number, longitude: number): Promis
       }
     );
 
+    if (!response.ok) {
+      console.log("API error status:", response.status);
+      return [];
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      console.log("API returned non-JSON response");
+      return [];
+    }
+
     const data = await response.json();
     const hospitals: HealthcareProvider[] = [];
 
-    if (data.elements) {
-      data.elements.forEach((element: any, index: number) => {
+    if (data.elements && Array.isArray(data.elements)) {
+      data.elements.forEach((element: any) => {
         const lat = element.lat || (element.center && element.center.lat);
         const lon = element.lon || (element.center && element.center.lon);
 
@@ -63,11 +77,11 @@ async function fetchNearbyHospitals(latitude: number, longitude: number): Promis
           if (dist <= 5) { // Show hospitals within 5 miles
             hospitals.push({
               id: `hospital-${element.id}`,
-              name: element.tags.name || "Hospital",
+              name: element.tags?.name || "Hospital",
               type: "hospital",
               distance: dist,
               distanceText: dist < 1 ? `${(dist * 5280).toFixed(0)} ft` : `${dist.toFixed(1)} miles`,
-              address: element.tags["addr:full"] || element.tags["addr:street"] || "Address not available",
+              address: element.tags?.["addr:full"] || element.tags?.["addr:street"] || "Address not available",
               latitude: lat,
               longitude: lon,
             });
@@ -85,9 +99,16 @@ async function fetchNearbyHospitals(latitude: number, longitude: number): Promis
 
 async function fetchNearbyDoctors(latitude: number, longitude: number): Promise<HealthcareProvider[]> {
   try {
-    const query = `[bbox=${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045}];
-      (node["amenity"="doctors"];node["amenity"="clinic"];way["amenity"="doctors"];way["amenity"="clinic"];relation["amenity"="doctors"];relation["amenity"="clinic"];);
-      out geom;`;
+    const query = `[out:json];
+(
+  node["amenity"="doctors"](${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045});
+  node["amenity"="clinic"](${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045});
+  way["amenity"="doctors"](${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045});
+  way["amenity"="clinic"](${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045});
+  relation["amenity"="doctors"](${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045});
+  relation["amenity"="clinic"](${latitude - 0.045},${longitude - 0.045},${latitude + 0.045},${longitude + 0.045});
+);
+out center;`;
 
     const response = await fetch(
       "https://overpass-api.de/api/interpreter",
@@ -97,11 +118,22 @@ async function fetchNearbyDoctors(latitude: number, longitude: number): Promise<
       }
     );
 
+    if (!response.ok) {
+      console.log("API error status:", response.status);
+      return [];
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      console.log("API returned non-JSON response");
+      return [];
+    }
+
     const data = await response.json();
     const doctors: HealthcareProvider[] = [];
 
-    if (data.elements) {
-      data.elements.forEach((element: any, index: number) => {
+    if (data.elements && Array.isArray(data.elements)) {
+      data.elements.forEach((element: any) => {
         const lat = element.lat || (element.center && element.center.lat);
         const lon = element.lon || (element.center && element.center.lon);
 
@@ -110,11 +142,11 @@ async function fetchNearbyDoctors(latitude: number, longitude: number): Promise<
           if (dist <= 5) { // Show doctors within 5 miles
             doctors.push({
               id: `doctor-${element.id}`,
-              name: element.tags.name || "Clinic/Doctor",
+              name: element.tags?.name || "Clinic/Doctor",
               type: "doctor",
               distance: dist,
               distanceText: dist < 1 ? `${(dist * 5280).toFixed(0)} ft` : `${dist.toFixed(1)} miles`,
-              address: element.tags["addr:full"] || element.tags["addr:street"] || "Address not available",
+              address: element.tags?.["addr:full"] || element.tags?.["addr:street"] || "Address not available",
               latitude: lat,
               longitude: lon,
             });
@@ -249,7 +281,7 @@ export default function DoctorsScreen() {
                         ]}
                       >
                         <Feather
-                          name="building"
+                          name="heart"
                           size={24}
                           color={theme.buttonText}
                         />
