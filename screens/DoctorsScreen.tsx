@@ -78,6 +78,10 @@ const DOCTOR_DATABASE: Omit<Doctor, "distance" | "distanceText">[] = [
   // Central - Bhopal
   { id: "29", name: "Dr. Vikram Rao", specialty: "Cardiology", rating: 4.7, address: "Apollo Hospital, Bhopal", latitude: 23.1815, longitude: 79.9864 },
   { id: "30", name: "Dr. Neha Sharma", specialty: "General Physician", rating: 4.8, address: "Fortis Hospital, Bhopal", latitude: 23.2000, longitude: 79.9800 },
+  // Central - Naya Raipur
+  { id: "51", name: "Dr. Arjun Singh", specialty: "General Physician", rating: 4.8, address: "Apollo Hospital, Naya Raipur", latitude: 21.2300, longitude: 81.6400 },
+  { id: "52", name: "Dr. Priya Mishra", specialty: "Internal Medicine", rating: 4.9, address: "Fortis Hospital, Naya Raipur", latitude: 21.2250, longitude: 81.6350 },
+  { id: "53", name: "Dr. Ravi Patel", specialty: "Pediatrics", rating: 4.7, address: "Max Healthcare, Naya Raipur", latitude: 21.2400, longitude: 81.6450 },
   // South - Bangalore
   { id: "31", name: "Dr. Suresh Rao", specialty: "Internal Medicine", rating: 4.8, address: "Apollo Hospital, Bangalore", latitude: 12.9716, longitude: 77.5946 },
   { id: "32", name: "Dr. Divya Sharma", specialty: "Cardiology", rating: 4.9, address: "Manipal Hospital, Bangalore", latitude: 12.9352, longitude: 77.6245 },
@@ -151,6 +155,10 @@ const HOSPITAL_DATABASE: Omit<Hospital, "distance" | "distanceText">[] = [
   // Bhopal
   { id: "h28", name: "Apollo Hospital", type: "Multi-specialty", rating: 4.8, address: "Apollo Hospital, Bhopal", latitude: 23.1815, longitude: 79.9864 },
   { id: "h29", name: "Fortis Hospital", type: "Multi-specialty", rating: 4.9, address: "Fortis Hospital, Bhopal", latitude: 23.2000, longitude: 79.9800 },
+  // Naya Raipur
+  { id: "h47", name: "Apollo Hospital", type: "Multi-specialty", rating: 4.8, address: "Apollo Hospital, Naya Raipur", latitude: 21.2300, longitude: 81.6400 },
+  { id: "h48", name: "Fortis Hospital", type: "Multi-specialty", rating: 4.9, address: "Fortis Hospital, Naya Raipur", latitude: 21.2250, longitude: 81.6350 },
+  { id: "h49", name: "Max Healthcare", type: "Multi-specialty", rating: 4.8, address: "Max Healthcare, Naya Raipur", latitude: 21.2400, longitude: 81.6450 },
   // Bangalore
   { id: "h30", name: "Apollo Hospital", type: "Multi-specialty", rating: 4.9, address: "Apollo Hospital, Bangalore", latitude: 12.9716, longitude: 77.5946 },
   { id: "h31", name: "Manipal Hospital", type: "Multi-specialty", rating: 4.8, address: "Manipal Hospital, Bangalore", latitude: 12.9352, longitude: 77.6245 },
