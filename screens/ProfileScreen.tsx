@@ -29,15 +29,9 @@ export default function ProfileScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [editingAllergy, setEditingAllergy] = useState("");
   const [editingHistory, setEditingHistory] = useState("");
-  const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleToggleTheme = useCallback(async () => {
-    try {
-      await toggleTheme();
-      setRefreshKey(prev => prev + 1);
-    } catch (error) {
-      console.error("Failed to toggle theme:", error);
-    }
+  const handleToggleTheme = useCallback(() => {
+    toggleTheme();
   }, [toggleTheme]);
 
   useFocusEffect(
@@ -271,7 +265,7 @@ export default function ProfileScreen() {
             Settings
           </ThemedText>
 
-          <Pressable onPress={handleToggleTheme} key={refreshKey}>
+          <Pressable onPress={handleToggleTheme}>
             <Card style={styles.settingCard}>
               <View style={styles.settingRow}>
                 <Feather
