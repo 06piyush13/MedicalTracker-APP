@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Alert, Linking, Pressable } from "react-native";
+import { View, StyleSheet, Alert, Linking, Pressable, TextInput } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import * as WebBrowser from "expo-web-browser";
@@ -9,6 +9,18 @@ import { Card } from "@/components/Card";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
+
+// Sample locations with coordinates for testing
+const LOCATION_PRESETS: Record<string, { latitude: number; longitude: number }> = {
+  "San Francisco": { latitude: 37.7749, longitude: -122.4194 },
+  "Los Angeles": { latitude: 34.0522, longitude: -118.2437 },
+  "Chicago": { latitude: 41.8781, longitude: -87.6298 },
+  "New York": { latitude: 40.7128, longitude: -74.006 },
+  "Boston": { latitude: 42.3601, longitude: -71.0589 },
+  "Seattle": { latitude: 47.6062, longitude: -122.3321 },
+  "Miami": { latitude: 25.7617, longitude: -80.1918 },
+  "Denver": { latitude: 39.7392, longitude: -104.9903 },
+};
 
 interface Doctor {
   id: string;
@@ -87,8 +99,9 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 
 export default function DoctorsScreen() {
   const { theme } = useTheme();
-  const [location, setLocation] = useState<string>("Finding location...");
+  const [location, setLocation] = useState<string>("Select a location");
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [showLocationMenu, setShowLocationMenu] = useState(false);
   const [userCoords, setUserCoords] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
@@ -98,48 +111,55 @@ export default function DoctorsScreen() {
   const requestLocationPermission = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setLocation("Location permission denied");
-        // Use default location if permission not granted
-        setUserCoords({ latitude: 40.7128, longitude: -74.006 });
-        loadNearbyDoctors(40.7128, -74.006, "Default Area");
-        return;
-      }
-
-      try {
-        const currentLocation = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
-        });
-        const { latitude, longitude } = currentLocation.coords;
-        setUserCoords({ latitude, longitude });
-
+      if (status === "granted") {
         try {
-          const [address] = await Location.reverseGeocodeAsync({
-            latitude,
-            longitude,
+          const currentLocation = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
           });
-          const locationName = `${address.city || "Unknown"}, ${address.region || "Unknown"}`;
-          setLocation(locationName);
-          loadNearbyDoctors(latitude, longitude, locationName);
-        } catch (geocodeError) {
-          // If reverse geocoding fails, still show doctors from detected location
-          setLocation("Your Location");
-          loadNearbyDoctors(latitude, longitude, "Your Location");
+          const { latitude, longitude } = currentLocation.coords;
+          
+          try {
+            const [address] = await Location.reverseGeocodeAsync({
+              latitude,
+              longitude,
+            });
+            const locationName = `${address.city || "Unknown"}, ${address.region || "Unknown"}`;
+            setLocation(locationName);
+            setUserCoords({ latitude, longitude });
+            loadNearbyDoctors(latitude, longitude);
+            return;
+          } catch (e) {
+            // Continue with coordinates if geocoding fails
+            setLocation("Your Location");
+            setUserCoords({ latitude, longitude });
+            loadNearbyDoctors(latitude, longitude);
+            return;
+          }
+        } catch (locationError) {
+          // Location detection failed
         }
-      } catch (locationError) {
-        // If location detection fails, use default
-        setLocation("Default Area");
-        setUserCoords({ latitude: 40.7128, longitude: -74.006 });
-        loadNearbyDoctors(40.7128, -74.006, "Default Area");
       }
     } catch (error) {
-      setLocation("Unable to determine location");
-      setUserCoords({ latitude: 40.7128, longitude: -74.006 });
-      loadNearbyDoctors(40.7128, -74.006, "Default Area");
+      // Permission request failed
+    }
+    
+    // Default: Load doctors from NYC if location detection fails
+    setLocation("New York");
+    setUserCoords({ latitude: 40.7128, longitude: -74.006 });
+    loadNearbyDoctors(40.7128, -74.006);
+  };
+
+  const handleLocationSelect = (cityName: string) => {
+    const coords = LOCATION_PRESETS[cityName];
+    if (coords) {
+      setLocation(cityName);
+      setUserCoords(coords);
+      loadNearbyDoctors(coords.latitude, coords.longitude);
+      setShowLocationMenu(false);
     }
   };
 
-  const loadNearbyDoctors = (userLat: number, userLon: number, locationName: string) => {
+  const loadNearbyDoctors = (userLat: number, userLon: number) => {
     const doctorsWithDistance = DOCTOR_DATABASE.map((doctor) => {
       const dist = calculateDistance(userLat, userLon, doctor.latitude, doctor.longitude);
       return {
@@ -176,18 +196,48 @@ export default function DoctorsScreen() {
   return (
     <ScreenScrollView>
       <View style={styles.container}>
-        <View style={styles.header}>
+        <Pressable
+          onPress={() => setShowLocationMenu(!showLocationMenu)}
+          style={[styles.header, { backgroundColor: theme.background }]}
+        >
           <Feather name="map-pin" size={24} color={theme.primary} />
           <ThemedText
             style={[
               Typography.body,
               styles.locationText,
-              { color: theme.textSecondary },
+              { color: theme.primary },
             ]}
           >
             {location}
           </ThemedText>
-        </View>
+          <Feather name="chevron-down" size={20} color={theme.primary} />
+        </Pressable>
+
+        {showLocationMenu && (
+          <Card style={styles.locationMenu}>
+            {Object.keys(LOCATION_PRESETS).map((city) => (
+              <Pressable
+                key={city}
+                onPress={() => handleLocationSelect(city)}
+                style={[
+                  styles.locationMenuItem,
+                  location === city && {
+                    backgroundColor: theme.primaryLight,
+                  },
+                ]}
+              >
+                <ThemedText
+                  style={[
+                    Typography.body,
+                    { color: location === city ? theme.primary : theme.text },
+                  ]}
+                >
+                  {city}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </Card>
+        )}
 
         <ThemedText style={[Typography.h3, styles.title]}>
           Nearby Healthcare Providers
@@ -307,9 +357,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing.sm,
     marginBottom: Spacing.xl,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
   },
   locationText: {
     fontWeight: "600",
+    flex: 1,
+  },
+  locationMenu: {
+    marginBottom: Spacing.lg,
+    marginVertical: -Spacing.md,
+  },
+  locationMenuItem: {
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
   },
   title: {
     marginBottom: Spacing.lg,
