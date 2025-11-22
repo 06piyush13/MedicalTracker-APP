@@ -97,32 +97,62 @@ export default function DoctorsScreen() {
 
   const requestLocationPermission = async () => {
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setLocation("Location permission denied");
-        // Use default location (New York City)
-        setUserCoords({ latitude: 40.7128, longitude: -74.006 });
-        loadNearbyDoctors(40.7128, -74.006, "Current Location");
-        return;
+      // Try browser geolocation API first (works better on web)
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            setUserCoords({ latitude, longitude });
+            
+            try {
+              const [address] = await Location.reverseGeocodeAsync({
+                latitude,
+                longitude,
+              });
+              const locationName = `${address.city || "Unknown"}, ${address.region || "Unknown"}`;
+              setLocation(locationName);
+              loadNearbyDoctors(latitude, longitude, locationName);
+            } catch (e) {
+              setLocation("Your Location");
+              loadNearbyDoctors(latitude, longitude, "Your Location");
+            }
+          },
+          async () => {
+            // Fallback: Try Expo Location API
+            try {
+              const { status } = await Location.requestForegroundPermissionsAsync();
+              if (status === "granted") {
+                const currentLocation = await Location.getCurrentPositionAsync({});
+                const { latitude, longitude } = currentLocation.coords;
+                setUserCoords({ latitude, longitude });
+
+                const [address] = await Location.reverseGeocodeAsync({
+                  latitude,
+                  longitude,
+                });
+
+                const locationName = `${address.city || "Unknown"}, ${address.region || "Unknown"}`;
+                setLocation(locationName);
+                loadNearbyDoctors(latitude, longitude, locationName);
+              } else {
+                throw new Error("Permission denied");
+              }
+            } catch (fallbackError) {
+              // Final fallback: Show message and use a central default
+              setLocation("Location services unavailable - showing doctors from a default area");
+              setUserCoords({ latitude: 40.7128, longitude: -74.006 });
+              loadNearbyDoctors(40.7128, -74.006, "Default Area");
+            }
+          }
+        );
+      } else {
+        // No geolocation available, try Expo
+        throw new Error("Geolocation not available");
       }
-
-      const currentLocation = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = currentLocation.coords;
-      setUserCoords({ latitude, longitude });
-
-      const [address] = await Location.reverseGeocodeAsync({
-        latitude,
-        longitude,
-      });
-
-      const locationName = `${address.city || "Unknown"}, ${address.region || "Unknown"}`;
-      setLocation(locationName);
-      loadNearbyDoctors(latitude, longitude, locationName);
     } catch (error) {
-      setLocation("Current Location");
-      // Use default location if error
+      setLocation("Unable to determine location");
       setUserCoords({ latitude: 40.7128, longitude: -74.006 });
-      loadNearbyDoctors(40.7128, -74.006, "Current Location");
+      loadNearbyDoctors(40.7128, -74.006, "Default Area");
     }
   };
 
