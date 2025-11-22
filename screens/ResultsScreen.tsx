@@ -86,7 +86,7 @@ export default function ResultsScreen() {
               {healthCheck.symptoms.map((symptom, index) => (
                 <View key={index} style={styles.symptomRow}>
                   <Feather
-                    name="check-circle"
+                    name="check"
                     size={16}
                     color={theme.primary}
                   />
@@ -130,7 +130,7 @@ export default function ResultsScreen() {
               {healthCheck.nextSteps.map((step, index) => (
                 <View key={index} style={styles.listItem}>
                   <Feather
-                    name="arrow-right-circle"
+                    name="arrow-right"
                     size={16}
                     color={theme.warning}
                   />
