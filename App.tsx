@@ -14,6 +14,7 @@ import ResultsScreen from "@/screens/ResultsScreen";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { PrivacyProvider } from "@/contexts/PrivacyContext";
 import { useTheme } from "@/hooks/useTheme";
 import {
   configureNotificationHandler,
@@ -96,14 +97,16 @@ export default function App() {
         <GestureHandlerRootView style={styles.root}>
           <KeyboardProvider>
             <ThemeProvider>
-              <AuthProvider>
-                <View style={styles.navContainer}>
-                  <NavigationContainer>
-                    <RootNavigator />
-                  </NavigationContainer>
-                </View>
-                <StatusBar style="auto" />
-              </AuthProvider>
+              <PrivacyProvider>
+                <AuthProvider>
+                  <View style={styles.navContainer}>
+                    <NavigationContainer>
+                      <RootNavigator />
+                    </NavigationContainer>
+                  </View>
+                  <StatusBar style="auto" />
+                </AuthProvider>
+              </PrivacyProvider>
             </ThemeProvider>
           </KeyboardProvider>
         </GestureHandlerRootView>
