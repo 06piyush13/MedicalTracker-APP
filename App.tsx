@@ -13,6 +13,7 @@ import CheckSymptomsScreen from "@/screens/CheckSymptomsScreen";
 import ResultsScreen from "@/screens/ResultsScreen";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useTheme } from "@/hooks/useTheme";
 import {
   configureNotificationHandler,
@@ -94,14 +95,16 @@ export default function App() {
       <SafeAreaProvider>
         <GestureHandlerRootView style={styles.root}>
           <KeyboardProvider>
-            <AuthProvider>
-              <View style={styles.navContainer}>
-                <NavigationContainer>
-                  <RootNavigator />
-                </NavigationContainer>
-              </View>
-              <StatusBar style="auto" />
-            </AuthProvider>
+            <ThemeProvider>
+              <AuthProvider>
+                <View style={styles.navContainer}>
+                  <NavigationContainer>
+                    <RootNavigator />
+                  </NavigationContainer>
+                </View>
+                <StatusBar style="auto" />
+              </AuthProvider>
+            </ThemeProvider>
           </KeyboardProvider>
         </GestureHandlerRootView>
       </SafeAreaProvider>

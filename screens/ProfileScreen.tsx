@@ -9,7 +9,7 @@ import { Card } from "@/components/Card";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/hooks/useTheme";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { useThemeContext } from "@/contexts/ThemeContext";
 import {
   getUserProfile,
   saveUserProfile,
@@ -23,7 +23,7 @@ import type { ProfileStackParamList } from "@/navigation/ProfileStackNavigator";
 export default function ProfileScreen() {
   const { theme } = useTheme();
   const { userName, logout } = useAuth();
-  const colorScheme = useColorScheme();
+  const { colorScheme, toggleTheme } = useThemeContext();
   const navigation = useNavigation<NativeStackNavigationProp<ProfileStackParamList>>();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [editingAllergy, setEditingAllergy] = useState("");
@@ -260,28 +260,30 @@ export default function ProfileScreen() {
             Settings
           </ThemedText>
 
-          <Card style={styles.settingCard}>
-            <View style={styles.settingRow}>
-              <Feather
-                name="moon"
-                size={20}
-                color={theme.textSecondary}
-              />
-              <View style={styles.settingInfo}>
-                <ThemedText style={[Typography.body, styles.settingLabel]}>
-                  Theme
-                </ThemedText>
-                <ThemedText
-                  style={[
-                    Typography.small,
-                    { color: theme.textSecondary },
-                  ]}
-                >
-                  {colorScheme === "dark" ? "Dark" : "Light"}
-                </ThemedText>
+          <Pressable onPress={toggleTheme}>
+            <Card style={styles.settingCard}>
+              <View style={styles.settingRow}>
+                <Feather
+                  name={colorScheme === "dark" ? "moon" : "sun"}
+                  size={20}
+                  color={theme.textSecondary}
+                />
+                <View style={styles.settingInfo}>
+                  <ThemedText style={[Typography.body, styles.settingLabel]}>
+                    Theme
+                  </ThemedText>
+                  <ThemedText
+                    style={[
+                      Typography.small,
+                      { color: theme.textSecondary },
+                    ]}
+                  >
+                    {colorScheme === "dark" ? "Dark" : "Light"}
+                  </ThemedText>
+                </View>
               </View>
-            </View>
-          </Card>
+            </Card>
+          </Pressable>
 
           <Card style={styles.settingCard}>
             <View style={styles.settingRow}>
