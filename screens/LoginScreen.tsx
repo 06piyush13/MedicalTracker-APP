@@ -5,17 +5,14 @@ import {
   TextInput,
   Image,
   Alert,
+  Text,
 } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { ScreenKeyboardAwareScrollView } from "@/components/ScreenKeyboardAwareScrollView";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Typography } from "@/constants/theme";
 
 export default function LoginScreen() {
-  const { theme } = useTheme();
   const { login } = useAuth();
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,42 +38,23 @@ export default function LoginScreen() {
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
     >
-      <ThemedView style={styles.content}>
+      <View style={styles.content}>
         <View style={styles.header}>
           <Image
             source={require("../assets/images/icon.png")}
             style={styles.logo}
             resizeMode="contain"
           />
-          <ThemedText style={[Typography.h1, styles.title]}>
-            Medical Tracker
-          </ThemedText>
-          <ThemedText
-            style={[
-              Typography.body,
-              styles.subtitle,
-              { color: theme.textSecondary },
-            ]}
-          >
-            Track your health, understand your symptoms
-          </ThemedText>
+          <Text style={styles.title}>Medical Tracker</Text>
+          <Text style={styles.subtitle}>Track your health, understand your symptoms</Text>
         </View>
 
         <View style={styles.form}>
-          <ThemedText style={[Typography.body, styles.label]}>
-            Welcome! What's your name?
-          </ThemedText>
+          <Text style={styles.label}>Welcome! What's your name?</Text>
           <TextInput
-            style={[
-              styles.input,
-              {
-                backgroundColor: theme.backgroundDefault,
-                borderColor: theme.border,
-                color: theme.text,
-              },
-            ]}
+            style={styles.input}
             placeholder="Enter your name"
-            placeholderTextColor={theme.textSecondary}
+            placeholderTextColor="#999"
             value={name}
             onChangeText={setName}
             autoCapitalize="words"
@@ -92,19 +70,13 @@ export default function LoginScreen() {
             loading={loading}
           />
 
-          <ThemedText
-            style={[
-              Typography.caption,
-              styles.disclaimer,
-              { color: theme.textSecondary },
-            ]}
-          >
+          <Text style={styles.disclaimer}>
             By continuing, you agree that this app provides general health
             information only and is not a substitute for professional medical
             advice.
-          </ThemedText>
+          </Text>
         </View>
-      </ThemedView>
+      </View>
     </ScreenKeyboardAwareScrollView>
   );
 }
@@ -114,6 +86,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing.xl,
     justifyContent: "center",
+    backgroundColor: "#ffffff",
   },
   content: {
     flex: 1,
@@ -129,11 +102,16 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   title: {
+    fontSize: 28,
+    fontWeight: "bold",
     marginBottom: Spacing.sm,
     textAlign: "center",
+    color: "#000",
   },
   subtitle: {
+    fontSize: 14,
     textAlign: "center",
+    color: "#666",
   },
   form: {
     width: "100%",
@@ -141,18 +119,25 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: Spacing.md,
     fontWeight: "600",
+    fontSize: 16,
+    color: "#000",
   },
   input: {
     height: Spacing.inputHeight,
     borderRadius: BorderRadius.sm,
     borderWidth: 1,
+    borderColor: "#ddd",
     paddingHorizontal: Spacing.lg,
     marginBottom: Spacing.xl,
     fontSize: 16,
+    backgroundColor: "#fff",
+    color: "#000",
   },
   disclaimer: {
     marginTop: Spacing.xl,
     textAlign: "center",
     lineHeight: 18,
+    fontSize: 12,
+    color: "#666",
   },
 });
