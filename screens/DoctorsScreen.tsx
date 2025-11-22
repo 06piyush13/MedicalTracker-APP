@@ -281,7 +281,7 @@ export default function DoctorsScreen() {
                         ]}
                       >
                         <Feather
-                          name="heart"
+                          name="shield"
                           size={24}
                           color={theme.buttonText}
                         />
