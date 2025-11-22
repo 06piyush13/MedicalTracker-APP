@@ -10,6 +10,7 @@ import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/hooks/useTheme";
 import { useThemeContext } from "@/contexts/ThemeContext";
+import { useEffect } from "react";
 import {
   getUserProfile,
   saveUserProfile,
@@ -28,6 +29,16 @@ export default function ProfileScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [editingAllergy, setEditingAllergy] = useState("");
   const [editingHistory, setEditingHistory] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleToggleTheme = useCallback(async () => {
+    try {
+      await toggleTheme();
+      setRefreshKey(prev => prev + 1);
+    } catch (error) {
+      console.error("Failed to toggle theme:", error);
+    }
+  }, [toggleTheme]);
 
   useFocusEffect(
     useCallback(() => {
@@ -260,11 +271,11 @@ export default function ProfileScreen() {
             Settings
           </ThemedText>
 
-          <Pressable onPress={toggleTheme}>
+          <Pressable onPress={handleToggleTheme} key={refreshKey}>
             <Card style={styles.settingCard}>
               <View style={styles.settingRow}>
                 <Feather
-                  name={colorScheme === "dark" ? "moon" : "sun"}
+                  name={colorScheme === "dark" ? "moon" : "star"}
                   size={20}
                   color={theme.textSecondary}
                 />
