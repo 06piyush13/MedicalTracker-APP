@@ -6,10 +6,9 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { ScreenKeyboardAwareScrollView } from "@/components/ScreenKeyboardAwareScrollView";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/hooks/useTheme";
@@ -17,7 +16,6 @@ import { Spacing, BorderRadius, Typography } from "@/constants/theme";
 
 export default function LoginScreen() {
   const { theme } = useTheme();
-  const insets = useSafeAreaInsets();
   const { login } = useAuth();
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,19 +37,11 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
+    <ScreenKeyboardAwareScrollView
+      contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
     >
-      <ThemedView
-        style={[
-          styles.container,
-          {
-            paddingTop: insets.top + Spacing["3xl"],
-            paddingBottom: insets.bottom + Spacing.xl,
-          },
-        ]}
-      >
+      <ThemedView style={styles.content}>
         <View style={styles.header}>
           <Image
             source={require("../assets/images/icon.png")}
@@ -115,7 +105,7 @@ export default function LoginScreen() {
           </ThemedText>
         </View>
       </ThemedView>
-    </KeyboardAwareScrollView>
+    </ScreenKeyboardAwareScrollView>
   );
 }
 
@@ -123,6 +113,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: Spacing.xl,
+    justifyContent: "center",
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
   },
   header: {
     alignItems: "center",
