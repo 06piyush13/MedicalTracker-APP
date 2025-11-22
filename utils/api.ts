@@ -1,6 +1,21 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
+// For web, use the current domain, for native, use localhost
+const getAPIURL = () => {
+  if (typeof window !== "undefined" && window.location) {
+    // We're in a web browser - use relative path or full domain
+    const host = window.location.hostname;
+    const isLocalhost = host === "localhost" || host === "127.0.0.1";
+    if (isLocalhost) {
+      return "http://localhost:3000";
+    }
+    // We're on a remote server, use HTTPS with the same domain
+    return `https://${host}:3000`;
+  }
+  return process.env.REACT_APP_API_URL || "http://localhost:3000";
+};
+
+const API_URL = getAPIURL();
 
 let authToken = "";
 
