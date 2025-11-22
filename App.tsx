@@ -95,9 +95,11 @@ export default function App() {
         <GestureHandlerRootView style={styles.root}>
           <KeyboardProvider>
             <AuthProvider>
-              <NavigationContainer>
-                <RootNavigator />
-              </NavigationContainer>
+              <View style={styles.navContainer}>
+                <NavigationContainer>
+                  <RootNavigator />
+                </NavigationContainer>
+              </View>
               <StatusBar style="auto" />
             </AuthProvider>
           </KeyboardProvider>
@@ -110,10 +112,16 @@ export default function App() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    backgroundColor: "#fff",
+  },
+  navContainer: {
+    flex: 1,
+    overflow: "hidden",
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#fff",
   },
 });
