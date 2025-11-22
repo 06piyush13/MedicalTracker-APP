@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -14,6 +14,10 @@ import ResultsScreen from "@/screens/ResultsScreen";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/hooks/useTheme";
+import {
+  configureNotificationHandler,
+  requestNotificationPermissions,
+} from "@/utils/notifications";
 
 export type RootStackParamList = {
   Main: undefined;
@@ -27,6 +31,15 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
   const { theme } = useTheme();
+
+  useEffect(() => {
+    setupNotifications();
+  }, []);
+
+  const setupNotifications = async () => {
+    configureNotificationHandler();
+    await requestNotificationPermissions();
+  };
 
   if (isLoading) {
     return (

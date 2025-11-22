@@ -4,10 +4,10 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Spacing } from "@/constants/theme";
 
-export function useScreenInsets(options?: { hasTabBar?: boolean }) {
+export function useScreenInsets() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-  const tabBarHeight = options?.hasTabBar ? useBottomTabBarHeight() : 0;
+  const tabBarHeight = useBottomTabBarHeight();
 
   return {
     paddingTop: headerHeight + Spacing.xl,
