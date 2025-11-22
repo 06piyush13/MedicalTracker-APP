@@ -194,7 +194,7 @@ export default function MedicationsScreen() {
         {reminders.length === 0 ? (
           <Card style={styles.emptyCard}>
             <Feather
-              name="pill"
+              name="package"
               size={40}
               color={theme.textSecondary}
               style={styles.emptyIcon}
