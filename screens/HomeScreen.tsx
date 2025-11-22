@@ -1,52 +1,248 @@
-import React from "react";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useState, useCallback } from "react";
+import { View, StyleSheet } from "react-native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Feather } from "@expo/vector-icons";
+import { ScreenScrollView } from "@/components/ScreenScrollView";
+import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
-import { ScreenFlatList } from "@/components/ScreenFlatList";
-import Spacer from "@/components/Spacer";
-import { Spacing } from "@/constants/theme";
+import { PrimaryButton } from "@/components/PrimaryButton";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/hooks/useTheme";
+import { getHealthChecks, type HealthCheck } from "@/utils/storage";
+import { Spacing, Typography, BorderRadius } from "@/constants/theme";
+import type { RootStackParamList } from "@/App";
 
-type HomeStackParamList = {
-  Home: undefined;
-  Detail: undefined;
-};
+export default function HomeScreen() {
+  const { theme } = useTheme();
+  const { userName } = useAuth();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [recentChecks, setRecentChecks] = useState<HealthCheck[]>([]);
+  const [totalChecks, setTotalChecks] = useState(0);
 
-type HomeScreenProps = {
-  navigation: NativeStackNavigationProp<HomeStackParamList, "Home">;
-};
-
-interface CardData {
-  id: string;
-  elevation: number;
-}
-
-const CARD_DATA: CardData[] = [
-  { id: "1", elevation: 1 },
-  { id: "2", elevation: 2 },
-  { id: "3", elevation: 3 },
-  { id: "4", elevation: 1 },
-  { id: "5", elevation: 2 },
-  { id: "6", elevation: 3 },
-  { id: "7", elevation: 1 },
-  { id: "8", elevation: 2 },
-  { id: "9", elevation: 3 },
-];
-
-export default function HomeScreen({ navigation }: HomeScreenProps) {
-  const renderItem = ({ item }: { item: CardData }) => (
-    <>
-      <Card
-        elevation={item.elevation}
-        onPress={() => navigation.navigate("Detail")}
-      />
-      <Spacer height={Spacing.lg} />
-    </>
+  useFocusEffect(
+    useCallback(() => {
+      loadHealthData();
+    }, [])
   );
+
+  const loadHealthData = async () => {
+    const checks = await getHealthChecks();
+    setTotalChecks(checks.length);
+    setRecentChecks(checks.slice(0, 3));
+  };
+
+  const handleStartCheck = () => {
+    navigation.navigate("CheckSymptoms");
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   return (
-    <ScreenFlatList
-      data={CARD_DATA}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
-    />
+    <ScreenScrollView>
+      <View style={styles.container}>
+        <View style={styles.greeting}>
+          <ThemedText style={[Typography.h2, styles.greetingText]}>
+            Hello, {userName}
+          </ThemedText>
+          <ThemedText
+            style={[
+              Typography.body,
+              { color: theme.textSecondary },
+            ]}
+          >
+            How are you feeling today?
+          </ThemedText>
+        </View>
+
+        <View style={styles.statsRow}>
+          <Card style={styles.statCard}>
+            <ThemedText
+              style={[Typography.h1, { color: theme.primary }]}
+            >
+              {totalChecks}
+            </ThemedText>
+            <ThemedText
+              style={[
+                Typography.small,
+                { color: theme.textSecondary },
+              ]}
+            >
+              Total Checks
+            </ThemedText>
+          </Card>
+          <Card style={styles.statCard}>
+            <ThemedText
+              style={[Typography.h1, { color: theme.primary }]}
+            >
+              {recentChecks.length > 0
+                ? formatDate(recentChecks[0].date)
+                : "-"}
+            </ThemedText>
+            <ThemedText
+              style={[
+                Typography.small,
+                { color: theme.textSecondary },
+              ]}
+            >
+              Last Check
+            </ThemedText>
+          </Card>
+        </View>
+
+        <View style={styles.section}>
+          <ThemedText style={[Typography.h3, styles.sectionTitle]}>
+            Quick Action
+          </ThemedText>
+          <PrimaryButton
+            title="Check Your Symptoms"
+            onPress={handleStartCheck}
+          />
+        </View>
+
+        {recentChecks.length > 0 ? (
+          <View style={styles.section}>
+            <ThemedText style={[Typography.h3, styles.sectionTitle]}>
+              Recent Checks
+            </ThemedText>
+            {recentChecks.map((check) => (
+              <Card key={check.id} style={styles.checkCard}>
+                <View style={styles.checkHeader}>
+                  <ThemedText style={[Typography.body, styles.checkDate]}>
+                    {new Date(check.date).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </ThemedText>
+                </View>
+                <View style={styles.symptomsContainer}>
+                  {check.symptoms.slice(0, 3).map((symptom, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.symptomTag,
+                        { backgroundColor: theme.backgroundSecondary },
+                      ]}
+                    >
+                      <ThemedText
+                        style={[
+                          Typography.small,
+                          { color: theme.textSecondary },
+                        ]}
+                      >
+                        {symptom}
+                      </ThemedText>
+                    </View>
+                  ))}
+                  {check.symptoms.length > 3 ? (
+                    <ThemedText
+                      style={[
+                        Typography.small,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      +{check.symptoms.length - 3} more
+                    </ThemedText>
+                  ) : null}
+                </View>
+              </Card>
+            ))}
+          </View>
+        ) : (
+          <Card style={styles.emptyCard}>
+            <Feather
+              name="clipboard"
+              size={48}
+              color={theme.textSecondary}
+              style={styles.emptyIcon}
+            />
+            <ThemedText
+              style={[
+                Typography.body,
+                styles.emptyText,
+                { color: theme.textSecondary },
+              ]}
+            >
+              No health checks yet
+            </ThemedText>
+            <ThemedText
+              style={[
+                Typography.small,
+                { color: theme.textSecondary },
+              ]}
+            >
+              Start by checking your symptoms
+            </ThemedText>
+          </Card>
+        )}
+      </View>
+    </ScreenScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: Spacing.xl,
+  },
+  greeting: {
+    marginBottom: Spacing.xl,
+  },
+  greetingText: {
+    marginBottom: Spacing.xs,
+  },
+  statsRow: {
+    flexDirection: "row",
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  statCard: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: Spacing.xl,
+  },
+  section: {
+    marginBottom: Spacing.xl,
+  },
+  sectionTitle: {
+    marginBottom: Spacing.md,
+  },
+  checkCard: {
+    marginBottom: Spacing.md,
+  },
+  checkHeader: {
+    marginBottom: Spacing.sm,
+  },
+  checkDate: {
+    fontWeight: "600",
+  },
+  symptomsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.xs,
+    alignItems: "center",
+  },
+  symptomTag: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.xs,
+  },
+  emptyCard: {
+    alignItems: "center",
+    paddingVertical: Spacing["3xl"],
+  },
+  emptyIcon: {
+    marginBottom: Spacing.md,
+  },
+  emptyText: {
+    marginBottom: Spacing.xs,
+  },
+});

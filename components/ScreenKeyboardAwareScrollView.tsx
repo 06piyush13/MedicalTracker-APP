@@ -9,15 +9,20 @@ import { useScreenInsets } from "@/hooks/useScreenInsets";
 import { Spacing } from "@/constants/theme";
 import { ScreenScrollView } from "./ScreenScrollView";
 
+interface ScreenKeyboardAwareScrollViewProps extends KeyboardAwareScrollViewProps {
+  hasTabBar?: boolean;
+}
+
 export function ScreenKeyboardAwareScrollView({
   children,
   contentContainerStyle,
   style,
+  hasTabBar = true,
   keyboardShouldPersistTaps = "handled",
   ...scrollViewProps
-}: KeyboardAwareScrollViewProps) {
+}: ScreenKeyboardAwareScrollViewProps) {
   const { theme } = useTheme();
-  const { paddingTop, paddingBottom, scrollInsetBottom } = useScreenInsets();
+  const { paddingTop, paddingBottom, scrollInsetBottom } = useScreenInsets({ hasTabBar });
 
   /**
    * KeyboardAwareScrollView isn't compatible with web (it relies on native APIs), so the code falls back to ScreenScrollView on web to avoid runtime errors.

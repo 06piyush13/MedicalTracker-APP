@@ -1,17 +1,16 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "@/screens/HomeScreen";
-import { HeaderTitle } from "@/components/HeaderTitle";
+import DoctorsScreen from "@/screens/DoctorsScreen";
 import { useTheme } from "@/hooks/useTheme";
 import { getCommonScreenOptions } from "@/navigation/screenOptions";
 
-export type HomeStackParamList = {
-  Home: undefined;
+export type DoctorsStackParamList = {
+  Doctors: undefined;
 };
 
-const Stack = createNativeStackNavigator<HomeStackParamList>();
+const Stack = createNativeStackNavigator<DoctorsStackParamList>();
 
-export default function HomeStackNavigator() {
+export default function DoctorsStackNavigator() {
   const { theme, isDark } = useTheme();
 
   return (
@@ -21,10 +20,10 @@ export default function HomeStackNavigator() {
       }}
     >
       <Stack.Screen
-        name="Home"
-        component={HomeScreen}
+        name="Doctors"
+        component={DoctorsScreen}
         options={{
-          headerTitle: () => <HeaderTitle title="Medical Tracker" />,
+          headerTitle: "Find Doctors",
           headerTransparent: true,
           headerBlurEffect: "systemMaterial",
         }}
