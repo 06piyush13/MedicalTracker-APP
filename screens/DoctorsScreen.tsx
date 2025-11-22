@@ -156,6 +156,7 @@ export default function DoctorsScreen() {
   };
 
   const loadNearbyDoctors = (userLat: number, userLon: number) => {
+    // Calculate distances for all doctors
     const doctorsWithDistance = DOCTOR_DATABASE.map((doctor) => {
       const dist = calculateDistance(userLat, userLon, doctor.latitude, doctor.longitude);
       return {
@@ -163,9 +164,24 @@ export default function DoctorsScreen() {
         distance: dist,
         distanceText: dist < 1 ? `${(dist * 5280).toFixed(0)} ft` : `${dist.toFixed(1)} miles`,
       };
-    }).sort((a, b) => a.distance - b.distance);
+    });
 
-    setDoctors(doctorsWithDistance);
+    // Find the nearest doctor to determine user's city
+    if (doctorsWithDistance.length > 0) {
+      const nearestDoctor = doctorsWithDistance.reduce((prev, current) =>
+        prev.distance < current.distance ? prev : current
+      );
+
+      // Extract city name from address (last part before comma)
+      const userCity = nearestDoctor.address.split(",").pop()?.trim() || "";
+
+      // Filter doctors to show only those from the same city
+      const filteredDoctors = doctorsWithDistance
+        .filter((doctor) => doctor.address.includes(userCity))
+        .sort((a, b) => a.distance - b.distance);
+
+      setDoctors(filteredDoctors);
+    }
   };
 
   const handleGetDirections = async (doctor: Doctor) => {
