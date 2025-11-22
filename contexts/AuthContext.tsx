@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { apiLogin, initializeAPI, setAuthToken, getAuthToken } from "@/utils/api";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -22,8 +23,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuthStatus = async () => {
     try {
+      await initializeAPI();
+      const token = getAuthToken();
       const name = await AsyncStorage.getItem("userName");
-      if (name) {
+      if (token && name) {
         setUserName(name);
         setIsAuthenticated(true);
       }
@@ -36,6 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (name: string) => {
     try {
+      const response = await apiLogin(name);
       await AsyncStorage.setItem("userName", name);
       setUserName(name);
       setIsAuthenticated(true);
@@ -48,6 +52,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await AsyncStorage.removeItem("userName");
+      await AsyncStorage.removeItem("authToken");
+      setAuthToken("");
       setUserName("");
       setIsAuthenticated(false);
     } catch (error) {
