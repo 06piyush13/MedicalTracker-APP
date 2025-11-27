@@ -129,4 +129,6 @@ The backend provides the following API endpoints:
 - `contexts/`: React Contexts for state management.
 - `assets/`: Images and other static assets.
 
-
+## Update
+Update api.ts 
+export const GEMINI_API_KEY = ""
