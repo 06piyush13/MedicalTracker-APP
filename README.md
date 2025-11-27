@@ -8,7 +8,8 @@ Medical Tracker is a full-stack mobile application designed to help users track 
 
 ![alt text](image-2.png)
 
-![alt text](image-3.png)
+<img width="576" height="1280" alt="image" src="https://github.com/user-attachments/assets/f73e6f8a-2d8a-40d2-a21d-77fa38a9b5d9" />
+
 
 ![alt text](image-4.png)
 
