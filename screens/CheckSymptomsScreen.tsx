@@ -7,7 +7,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { SymptomChip } from "@/components/SymptomChip";
 import { useTheme } from "@/hooks/useTheme";
-import { COMMON_SYMPTOMS, generateMockPrediction } from "@/utils/symptoms";
+import { COMMON_SYMPTOMS, analyzeSymptomsWithAI } from "@/utils/symptoms";
 import { saveHealthCheck } from "@/utils/storage";
 import { Spacing, Typography, BorderRadius } from "@/constants/theme";
 import type { RootStackParamList } from "@/App";
@@ -36,14 +36,15 @@ export default function CheckSymptomsScreen() {
 
     setLoading(true);
     try {
-      const { prediction, medications, nextSteps } =
-        generateMockPrediction(selectedSymptoms);
+      // Use the new AI-powered analysis (which falls back to offline logic if needed)
+      const { predictions, medications, nextSteps } =
+        await analyzeSymptomsWithAI(selectedSymptoms);
 
       const healthCheck = {
         id: Date.now().toString(),
         date: new Date().toISOString(),
         symptoms: selectedSymptoms,
-        prediction,
+        predictions,
         medications,
         nextSteps,
       };
@@ -52,7 +53,7 @@ export default function CheckSymptomsScreen() {
 
       navigation.navigate("Results", { symptoms: selectedSymptoms });
     } catch (error) {
-      Alert.alert("Error", "Failed to analyze symptoms");
+      Alert.alert("Error", "Failed to analyze symptoms. Please try again.");
     } finally {
       setLoading(false);
     }

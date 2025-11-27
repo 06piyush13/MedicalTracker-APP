@@ -37,9 +37,9 @@ const verifyToken = (req: Request, res: Response, next: any) => {
 app.post('/api/auth/login', async (req: Request, res: Response) => {
   try {
     const { name, password } = req.body;
-    
+
     let user = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
-    
+
     if (user.rows.length === 0) {
       // Create new user
       const hashedPassword = await bcryptjs.hash(password || 'default', 10);

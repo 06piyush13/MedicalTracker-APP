@@ -12,6 +12,7 @@ import LoginScreen from "@/screens/LoginScreen";
 import CheckSymptomsScreen from "@/screens/CheckSymptomsScreen";
 import ResultsScreen from "@/screens/ResultsScreen";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ChatWidget } from "@/components/ChatWidget";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useTheme } from "@/hooks/useTheme";
@@ -101,6 +102,7 @@ export default function App() {
                   <NavigationContainer>
                     <RootNavigator />
                   </NavigationContainer>
+                  <ChatWidget />
                 </View>
                 <StatusBar style="auto" />
               </AuthProvider>

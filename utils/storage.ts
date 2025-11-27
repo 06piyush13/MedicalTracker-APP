@@ -1,10 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { DiseasePrediction } from "@/utils/symptoms";
+
 export interface HealthCheck {
   id: string;
   date: string;
   symptoms: string[];
-  prediction: string | null;
+  predictions: DiseasePrediction[];
   medications: string[];
   nextSteps: string[];
 }
@@ -41,7 +43,6 @@ export async function saveHealthCheck(
     const existingChecks = await getHealthChecks();
     const newCheck: HealthCheck = {
       id: Date.now().toString(),
-      date: new Date().toISOString(),
       ...healthCheck,
     };
     const updatedChecks = [newCheck, ...existingChecks];

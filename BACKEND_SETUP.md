@@ -9,13 +9,38 @@ Your app now has a **full-stack architecture**:
 
 ## Starting the Backend Server
 
-The backend Express server is already created and configured. To start it:
+The backend Express server is configured to use PostgreSQL.
+
+### 1. Database Setup (Local)
+
+You need a running PostgreSQL instance. The easiest way is using Docker:
+
+1. Install Docker Desktop.
+2. Run the database:
+   ```bash
+   docker-compose up -d
+   ```
+   This starts a Postgres DB on port 5432 with:
+   - User: `postgres`
+   - Password: `password`
+   - Database: `medicaltracker`
+
+Alternatively, install PostgreSQL locally and create a database named `medicaltracker`.
+
+### 2. Configuration
+
+Ensure you have a `.env` file in the root directory:
+```env
+DATABASE_URL=postgresql://postgres:password@localhost:5432/medicaltracker
+SESSION_SECRET=your-secret-key
+```
+
+### 3. Start the Server
 
 ```bash
 npx ts-node server.ts
 ```
-
-Or if you have a workflow set up:
+Or:
 ```bash
 npm run server
 ```

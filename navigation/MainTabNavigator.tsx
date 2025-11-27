@@ -9,7 +9,7 @@ import HomeStackNavigator from "@/navigation/HomeStackNavigator";
 import HistoryStackNavigator from "@/navigation/HistoryStackNavigator";
 import DoctorsStackNavigator from "@/navigation/DoctorsStackNavigator";
 import ProfileStackNavigator from "@/navigation/ProfileStackNavigator";
-import { FloatingActionButton } from "@/components/FloatingActionButton";
+
 import { useTheme } from "@/hooks/useTheme";
 import type { RootStackParamList } from "@/App";
 
@@ -27,9 +27,7 @@ export default function MainTabNavigator() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const handleFABPress = () => {
-    navigation.navigate("CheckSymptoms");
-  };
+
 
   return (
     <>
@@ -99,7 +97,7 @@ export default function MainTabNavigator() {
           }}
         />
       </Tab.Navigator>
-      <FloatingActionButton onPress={handleFABPress} />
+
     </>
   );
 }

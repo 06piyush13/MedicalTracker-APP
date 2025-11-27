@@ -43,9 +43,9 @@ export default function ResultsScreen() {
   };
 
   const handleFindDoctors = () => {
-    navigation.navigate("Main" as any, {
+    (navigation as any).navigate("Main", {
       screen: "DoctorsTab",
-    } as any);
+    });
   };
 
   if (!healthCheck) {
@@ -59,23 +59,45 @@ export default function ResultsScreen() {
   return (
     <ScreenScrollView>
       <View style={styles.container}>
-        <Card style={[styles.predictionCard, { borderColor: theme.info }]}>
-          <View style={styles.iconContainer}>
-            <Feather name="activity" size={32} color={theme.info} />
-          </View>
-          <ThemedText style={[Typography.h3, styles.predictionTitle]}>
-            Analysis Result
+        <View style={styles.section}>
+          <ThemedText style={[Typography.h3, styles.sectionTitle]}>
+            Potential Conditions
           </ThemedText>
-          <ThemedText
-            style={[
-              Typography.h2,
-              styles.predictionText,
-              { color: theme.info },
-            ]}
-          >
-            {healthCheck.prediction}
-          </ThemedText>
-        </Card>
+          {healthCheck.predictions.map((pred, index) => (
+            <Card
+              key={index}
+              style={[
+                styles.predictionCard,
+                {
+                  borderColor: pred.probability === 'High' ? theme.error :
+                    pred.probability === 'Medium' ? theme.warning : theme.info
+                }
+              ]}
+            >
+              <View style={styles.predictionHeader}>
+                <ThemedText style={[Typography.h3, { flex: 1 }]}>
+                  {pred.condition}
+                </ThemedText>
+                <View
+                  style={[
+                    styles.probabilityBadge,
+                    {
+                      backgroundColor: pred.probability === 'High' ? theme.error :
+                        pred.probability === 'Medium' ? theme.warning : theme.info
+                    }
+                  ]}
+                >
+                  <ThemedText style={[Typography.small, { color: '#fff', fontWeight: 'bold' }]}>
+                    {pred.probability}
+                  </ThemedText>
+                </View>
+              </View>
+              <ThemedText style={[Typography.body, { color: theme.textSecondary }]}>
+                {pred.description}
+              </ThemedText>
+            </Card>
+          ))}
+        </View>
 
         <View style={styles.section}>
           <ThemedText style={[Typography.h3, styles.sectionTitle]}>
@@ -179,19 +201,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   predictionCard: {
-    alignItems: "center",
-    paddingVertical: Spacing.xl,
-    borderWidth: 2,
-    marginBottom: Spacing.xl,
-  },
-  iconContainer: {
+    paddingVertical: Spacing.md,
+    borderLeftWidth: 4,
     marginBottom: Spacing.md,
   },
-  predictionTitle: {
+  predictionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: Spacing.xs,
   },
-  predictionText: {
-    textAlign: "center",
+  probabilityBadge: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.xs,
   },
   section: {
     marginBottom: Spacing.xl,
