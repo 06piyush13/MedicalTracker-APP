@@ -8,8 +8,7 @@ Medical Tracker is a full-stack mobile application designed to help users track 
 
 ![alt text](image-2.png)
 
-<img width="576" height="1280" alt="image" src="https://github.com/user-attachments/assets/f73e6f8a-2d8a-40d2-a21d-77fa38a9b5d9" />
-
+![alt text](image-3.png)
 
 ![alt text](image-4.png)
 
@@ -128,9 +127,8 @@ The backend provides the following API endpoints:
 - `constants/`: App constants.
 - `contexts/`: React Contexts for state management.
 - `assets/`: Images and other static assets.
+## Author
 
-## Update
-Update api.ts 
-export const GEMINI_API_KEY = ""
-##👨‍💻 Author
-Piyush Chandrakar 🎓 B.Tech in ECE @ IIIT Naya Raipur 📧 www.linkedin.com/in/piyushchandrakar13
+**Piyush Chandrakar**
+🎓 B.Tech in ECE @ IIIT Naya Raipur
+📧 [www.linkedin.com/in/piyushchandrakar13](https://www.linkedin.com/in/piyushchandrakar13)
