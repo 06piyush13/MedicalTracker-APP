@@ -132,3 +132,5 @@ The backend provides the following API endpoints:
 ## Update
 Update api.ts 
 export const GEMINI_API_KEY = ""
+##👨‍💻 Author
+Piyush Chandrakar 🎓 B.Tech in ECE @ IIIT Naya Raipur 📧 www.linkedin.com/in/piyushchandrakar13
